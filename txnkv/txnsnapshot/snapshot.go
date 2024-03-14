@@ -142,19 +142,22 @@ type KVSnapshot struct {
 }
 
 // NewTiKVSnapshot creates a snapshot of an TiKV store.
+// NewTiKVSnapshot 在一个tikv store上面创建一个数据快照
 func NewTiKVSnapshot(store kvstore, ts uint64, replicaReadSeed uint32) *KVSnapshot {
 	// Sanity check for snapshot version.
+	// 快照版本的完整性检查。
 	if ts >= math.MaxInt64 && ts != math.MaxUint64 {
+		//时间戳合法性检验（肯定不能大于系统最大值了）
 		err := errors.Errorf("try to get snapshot with a large ts %d", ts)
 		panic(err)
 	}
 	return &KVSnapshot{
 		store:           store,
 		version:         ts,
-		scanBatchSize:   defaultScanBatchSize,
-		priority:        txnutil.PriorityNormal,
+		scanBatchSize:   defaultScanBatchSize,   //scan数据的大小256
+		priority:        txnutil.PriorityNormal, //普通优先级
 		vars:            kv.DefaultVars,
-		replicaReadSeed: replicaReadSeed,
+		replicaReadSeed: replicaReadSeed, //follower读
 	}
 }
 

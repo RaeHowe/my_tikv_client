@@ -290,8 +290,10 @@ func (s *KVStore) DeleteRange(ctx context.Context, startKey []byte, endKey []byt
 // If the given ts is greater than the current TSO timestamp, the snapshot is not guaranteed
 // to be consistent.
 // Specially, it is useful to set ts to math.MaxUint64 to point get the latest committed data.
+// GetSnapshot获取一个快照，该快照能够读取任何小于给定ts的数据。如果给定的ts大于当前的事务启动时间TSO的话，快照
+// 就不能保证数据的一致性。特别的，设置ts为match.MaxUint64作为基准点去获取最新提交数据是比较有用的。
 func (s *KVStore) GetSnapshot(ts uint64) *txnsnapshot.KVSnapshot {
-	snapshot := txnsnapshot.NewTiKVSnapshot(s, ts, s.nextReplicaReadSeed())
+	snapshot := txnsnapshot.NewTiKVSnapshot(s, ts, s.nextReplicaReadSeed()) //s.nextReplicaReadSeed()是为了支持follower特性
 	return snapshot
 }
 
